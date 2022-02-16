@@ -14,6 +14,7 @@ add_message_files(
   Mode.msg
   PlaySong.msg
   MotorSetpoint.msg
+  CliffSensors.msg
 )
 
 generate_messages(

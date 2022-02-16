@@ -100,6 +100,7 @@ CreateDriver::CreateDriver(ros::NodeHandle& nh)
   joint_state_msg_.effort.resize(2);
   joint_state_msg_.name[0] = "left_wheel_joint";
   joint_state_msg_.name[1] = "right_wheel_joint";
+  cliff_msg_.header.frame_id = base_frame_;
 
   // Populate intial covariances
   for (int i = 0; i < 36; i++)
@@ -144,6 +145,7 @@ CreateDriver::CreateDriver(ros::NodeHandle& nh)
   bumper_pub_ = nh.advertise<create_msgs::Bumper>("bumper", 30);
   wheeldrop_pub_ = nh.advertise<std_msgs::Empty>("wheeldrop", 30);
   wheel_joint_pub_ = nh.advertise<sensor_msgs::JointState>("joint_states", 10);
+  cliff_pub_ = nh.advertise<create_msgs::CliffSensors>("cliff_sensors", 50);
 
   // Setup diagnostics
   diagnostics_.add("Battery Status", this, &CreateDriver::updateBatteryDiagnostics);
@@ -308,6 +310,7 @@ bool CreateDriver::update()
   publishMode();
   publishBumperInfo();
   publishWheeldrop();
+  publishCliffSensors();
 
   // If last velocity command was sent longer than latch duration, stop robot
   if (ros::Time::now() - last_cmd_vel_time_ >= ros::Duration(latch_duration_))
@@ -644,13 +647,27 @@ void CreateDriver::publishBumperInfo()
     bumper_msg_.light_signal_center_right = robot_->getLightSignalCenterRight();
   }
 
+
   bumper_pub_.publish(bumper_msg_);
 }
+
 
 void CreateDriver::publishWheeldrop()
 {
   if (robot_->isWheeldrop())
     wheeldrop_pub_.publish(empty_msg_);
+}
+
+
+void CreateDriver::publishCliffSensors()
+{
+  cliff_msg_.header.stamp = ros::Time::now();
+  cliff_msg_.is_cliff_left = robot_->isCliffLeft();
+  cliff_msg_.is_cliff_front_left = robot_->isCliffFrontLeft();
+  cliff_msg_.is_cliff_front_right = robot_->isCliffFrontRight();
+  cliff_msg_.is_cliff_right = robot_->isCliffFrontRight();
+
+  cliff_pub_.publish(cliff_msg_);
 }
 
 void CreateDriver::spinOnce()

@@ -33,6 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "create_msgs/DefineSong.h"
 #include "create_msgs/PlaySong.h"
 #include "create_msgs/MotorSetpoint.h"
+#include "create_msgs/CliffSensors.h"
 
 #include "create/create.h"
 
@@ -102,6 +103,7 @@ private:
   ros::Publisher bumper_pub_;
   ros::Publisher wheeldrop_pub_;
   ros::Publisher wheel_joint_pub_;
+  ros::Publisher cliff_pub_;
 
   tf2_ros::TransformBroadcaster tf_broadcaster_;
 
@@ -118,6 +120,7 @@ private:
   std_msgs::UInt16 uint16_msg_;
   std_msgs::Int16 int16_msg_;
   sensor_msgs::JointState joint_state_msg_;
+  create_msgs::CliffSensors cliff_msg_;
   bool is_running_slowly_;
 
   // ROS params
@@ -158,6 +161,7 @@ private:
   void publishMode();
   void publishBumperInfo();
   void publishWheeldrop();
+  void publishCliffSensors();
 
 public:
   explicit CreateDriver(ros::NodeHandle& nh);
