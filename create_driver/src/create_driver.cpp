@@ -691,6 +691,11 @@ void CreateDriver::publishCliffSensors()
   cliff_msg_.is_cliff_front_right = robot_->isCliffFrontRight();
   cliff_msg_.is_cliff_right = robot_->isCliffFrontRight();
 
+  cliff_msg_.cliff_signal_left = robot_->getLightCliffSignalLeft();
+  cliff_msg_.cliff_signal_front_left = robot_->getLightCliffSignalFrontLeft();
+  cliff_msg_.cliff_signal_front_right = robot_->getLightCliffSignalFrontRight();
+  cliff_msg_.cliff_signal_right = robot_->getLightCliffSignalRight();
+
   cliff_pub_.publish(cliff_msg_);
 }
 
