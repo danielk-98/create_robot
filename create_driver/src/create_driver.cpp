@@ -124,6 +124,7 @@ CreateDriver::CreateDriver(ros::NodeHandle& nh)
   side_brush_motor_sub_ = nh.subscribe("side_brush_motor", 10, &CreateDriver::sideBrushMotor, this);
   main_brush_motor_sub_ = nh.subscribe("main_brush_motor", 10, &CreateDriver::mainBrushMotor, this);
   vacuum_motor_sub_ = nh.subscribe("vacuum_motor", 10, &CreateDriver::vacuumBrushMotor, this);
+  setmode_sub_ = nh.subscribe("set_mode", 10, &CreateDriver::setModeCallback, this);
 
   // Setup publishers
   odom_pub_ = nh.advertise<nav_msgs::Odometry>("odom", 30);
@@ -297,6 +298,27 @@ void CreateDriver::vacuumBrushMotor(const create_msgs::MotorSetpointConstPtr& ms
   if (!robot_->setVacuumMotor(msg->duty_cycle))
   {
     ROS_ERROR_STREAM("[CREATE] Failed to set duty cycle " << msg->duty_cycle << " for vacuum motor");
+  }
+}
+void CreateDriver::setModeCallback(const create_msgs::Mode& msg)
+{
+  switch (msg.mode)
+  {
+    case mode_msg_.MODE_OFF:
+      robot_->setMode(create::MODE_OFF);
+      break;
+    case mode_msg_.MODE_PASSIVE:
+      robot_->setMode(create::MODE_PASSIVE);
+      break;
+    case mode_msg_.MODE_SAFE:
+      robot_->setMode(create::MODE_SAFE);
+      break;
+    case mode_msg_.MODE_FULL:
+      robot_->setMode(create::MODE_FULL);
+      break;
+    default:
+      ROS_ERROR("[CREATE] Unknown mode detected");
+      break;
   }
 }
 
@@ -629,6 +651,8 @@ void CreateDriver::publishBumperInfo()
   bumper_msg_.header.stamp = ros::Time::now();
   bumper_msg_.is_left_pressed = robot_->isLeftBumper();
   bumper_msg_.is_right_pressed = robot_->isRightBumper();
+
+  bumper_msg_.dirt_signal = robot_->getDirtDetect();
 
   if (model_.getVersion() >= create::V_3)
   {

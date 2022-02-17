@@ -83,6 +83,7 @@ private:
   ros::Subscriber side_brush_motor_sub_;
   ros::Subscriber main_brush_motor_sub_;
   ros::Subscriber vacuum_motor_sub_;
+  ros::Subscriber setmode_sub_;
 
   ros::Publisher odom_pub_;
   ros::Publisher clean_btn_pub_;
@@ -146,6 +147,7 @@ private:
   void sideBrushMotor(const create_msgs::MotorSetpointConstPtr& msg);
   void mainBrushMotor(const create_msgs::MotorSetpointConstPtr& msg);
   void vacuumBrushMotor(const create_msgs::MotorSetpointConstPtr& msg);
+  void setModeCallback(const create_msgs::Mode& msg);
 
   bool update();
   void updateBatteryDiagnostics(diagnostic_updater::DiagnosticStatusWrapper& stat);

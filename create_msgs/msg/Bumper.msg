@@ -21,3 +21,6 @@ uint16 light_signal_center_left
 uint16 light_signal_center_right
 uint16 light_signal_front_right
 uint16 light_signal_right
+
+# Dirt detect value
+uint8 dirt_signal
